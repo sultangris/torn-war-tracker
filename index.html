@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Faction War Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">Faction War Tracker</div>
+      <div class="meta">
+        <span id="war-label">No war detected</span>
+        <span class="tracker">
+          <input
+            type="number"
+            id="track-input"
+            placeholder="Track faction ID"
+            min="1"
+            inputmode="numeric"
+          />
+          <button id="track-btn" type="button">Track</button>
+          <button id="auto-btn" type="button" hidden title="Resume auto-detect from war state">Auto</button>
+        </span>
+        <span class="tracker">
+          <input id="room-input" placeholder="Room code" autocomplete="off" spellcheck="false" />
+          <button id="join-btn" type="button">Join</button>
+          <button id="leave-btn" type="button" hidden>Leave</button>
+        </span>
+        <span id="room-label"></span>
+        <span class="dot" id="poll-dot" title="Poll status"></span>
+        <span id="last-updated">—</span>
+        <button id="sort-stats-btn" type="button" title="Sort hittable list by estimated stats">Sort: stats</button>
+        <button id="hide-over-btn" type="button" title="Hide targets above my stats">Hide ≥ me</button>
+        <span id="own-stats-label" class="own-stats" title="Your total battle stats">—</span>
+        <button id="notify-btn" type="button" title="Enable hospital-out alerts">Enable alerts</button>
+        <button id="settings-btn" type="button">Settings</button>
+      </div>
+    </header>
+
+    <main id="board" hidden>
+      <section class="panel" data-panel="online">
+        <h2>Online <span class="count" id="count-online">0</span></h2>
+        <ul class="members" id="list-online"></ul>
+      </section>
+      <section class="panel" data-panel="recent">
+        <h2>Active &le; 5m <span class="count" id="count-recent">0</span></h2>
+        <ul class="members" id="list-recent"></ul>
+      </section>
+      <section class="panel" data-panel="hospital">
+        <h2>Hospital <span class="count" id="count-hospital">0</span></h2>
+        <ul class="members" id="list-hospital"></ul>
+      </section>
+      <section class="panel" data-panel="hittable">
+        <h2>Hittable (Okay) <span class="count" id="count-hittable">0</span></h2>
+        <div class="filters">
+          <label>Min lvl <input type="number" id="filter-min-level" min="1" max="100" /></label>
+          <label>Max lvl <input type="number" id="filter-max-level" min="1" max="100" /></label>
+        </div>
+        <ul class="members" id="list-hittable"></ul>
+      </section>
+      <section class="panel away" data-panel="away">
+        <h2>Away <span class="count" id="count-away">0</span></h2>
+        <ul class="members" id="list-away"></ul>
+      </section>
+      <section class="panel away" data-panel="inactive">
+        <h2>Inactive &ge; 24h <span class="count" id="count-inactive">0</span></h2>
+        <ul class="members" id="list-inactive"></ul>
+      </section>
+    </main>
+
+    <div id="setup" class="setup">
+      <div class="card">
+        <h1>Setup</h1>
+        <p>
+          Paste your Torn API key (Limited access is enough). It stays in this
+          browser via <code>localStorage</code> and is sent only to
+          <code>api.torn.com</code>.
+        </p>
+        <label>
+          API key
+          <input type="text" id="api-key" autocomplete="off" spellcheck="false" />
+        </label>
+        <label>
+          FFScouter key (optional)
+          <input type="text" id="ff-key" autocomplete="off" spellcheck="false" />
+        </label>
+        <label>
+          My total stats (override)
+          <input type="number" id="manual-total" min="0" inputmode="numeric" />
+        </label>
+        <p class="hint">
+          Stat estimates use FFScouter when a key is set, and fall back to a
+          coarse rank-based range otherwise. Your own total is fetched once a
+          day via the Torn API (Limited access); paste it manually above if
+          your key is Public-tier.
+        </p>
+        <p class="hint">
+          Need a key? <a
+            href="https://www.torn.com/preferences.php#tab=api?step=addNewKey&title=Faction%20War%20Tracker&user=basic,battlestats&faction=basic,members,wars"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Create a Custom key</a> with only the selections this app needs
+          (<code>user:basic,battlestats</code> + <code>faction:basic,wars,members</code>).
+        </p>
+        <p class="hint">
+          Manual enemy-faction override lives in the top bar &mdash; type a
+          faction ID and press <strong>Track</strong>. Press
+          <strong>Auto</strong> to resume war auto-detection.
+        </p>
+        <div class="row">
+          <button id="save-settings" type="button">Save</button>
+          <button id="clear-settings" type="button" class="ghost">Clear key</button>
+        </div>
+        <p class="err" id="setup-err" hidden></p>
+      </div>
+    </div>
+
+    <div id="banner" class="banner" hidden></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="claims.js"></script>
+    <script src="stats.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
